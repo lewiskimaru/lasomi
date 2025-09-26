@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Urbanist, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Lasomi brand colors */
+  --page-background: #062226;
+  --sidebar-background: #132f35;
+  --card-background: #132f35;
+  --primary-color: #0e5a81;
+  --secondary-color: #1f3539;
+  
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #b0c4c8;
+  
+  /* UI colors */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --danger-color: #dc2626;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+@layer base {
+  * {
+    border-color: var(--border-color);
+  }
+  
+  body {
+    background-color: var(--page-background);
+    color: var(--text-primary);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: var(--sidebar-background);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Thin scrollbar for waffle menu */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  
+  .scrollbar-thumb-border::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thumb-border::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@layer components {
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-primary);
+  }
+  
+  .btn-primary:hover {
+    background-color: #0f6691;
+  }
+  
+  .btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+  }
+  
+  .btn-secondary:hover {
+    background-color: #244049;
+  }
+  
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--text-secondary);
+  }
+  
+  .btn-ghost:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+  }
+  
+  /* Card components */
+  .card {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* Form elements */
+  .form-input {
+    @apply block w-full px-3 py-2 rounded-md text-sm;
+    background-color: var(--sidebar-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  .form-input::placeholder {
+    color: var(--text-secondary);
+  }
+  
+  .form-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+  }
+  
+  /* Layout components */
+  .top-bar {
+    @apply flex items-center justify-between h-16 px-6;
+    background-color: var(--sidebar-background);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .sidebar {
+    @apply flex flex-col;
+    width: 280px;
+    background-color: var(--sidebar-background);
+    border-right: 1px solid var(--border-color);
+  }
+}
