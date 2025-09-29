@@ -1,9 +1,6 @@
-# Legacy entries from getmocha
+# Build artifacts
 dist/
 node_modules/
-.wrangler/
-.dev.vars
-worker-configuration.d.ts
 
 # React / build artifacts
 build/

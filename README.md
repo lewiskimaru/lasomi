@@ -1,9 +1,9 @@
 ## Lasomi
 
-This app was created using https://getmocha.com.
-Need help or want to join the community? Join our [Discord](https://discord.gg/shDEGBSe2d).
+Telecom project lifecycle platform built by Lewis Kimaru.
+A comprehensive single-source platform for Survey → Design → Construction → Documentation → Handover.
 
-To run the devserver:
+To run the development server:
 ```
 npm install
 npm run dev

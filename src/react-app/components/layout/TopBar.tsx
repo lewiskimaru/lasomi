@@ -28,7 +28,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md flex items-center justify-center">
             <img 
-              src="https://mocha-cdn.com/019985a9-8d62-7868-8c28-6155548128b7/asomi.svg" 
+              src="/lasomi-logo.svg" 
               alt="Lasomi" 
               className="w-8 h-8"
             />

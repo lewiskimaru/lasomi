@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 
@@ -65,9 +65,12 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Toast notifications */}
       <Toaster
-        position="top-right"
+        position="bottom-right"
+        expand={false}
+        richColors
+        closeButton
+        duration={4000}
         toastOptions={{
-          duration: 4000,
           style: {
             background: 'var(--card-background)',
             color: 'var(--text-primary)',

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import {
   MapIcon,
   ClipboardDocumentListIcon,
@@ -11,7 +11,8 @@ import {
   ClockIcon,
   DocumentTextIcon,
   TrashIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/outline';
 import { useStorage } from '@/react-app/context/StorageContext';
 import { WelcomeMessage } from '@/react-app/components/common/WelcomeMessage';
@@ -34,52 +35,52 @@ interface WaffleMenuProps {
 
 const appCards: AppCard[] = [
   {
-    id: 'designer',
-    title: 'Designer',
-    description: 'Draw areas and extract building features',
-    icon: MapIcon,
-    href: '/app/designer',
-    color: 'from-blue-500 to-blue-600'
-  },
-  {
-    id: 'survey',
-    title: 'Survey',
-    description: 'Field data collection and validation tools',
-    icon: ClipboardDocumentListIcon,
-    href: '/app/survey',
-    color: 'from-green-500 to-green-600'
-  },
-  {
-    id: 'extraction',
-    title: 'Feature Extraction',
-    description: 'AI-powered infrastructure feature detection',
+    id: 'features',
+    title: 'Features',
+    description: 'Extract buildings, roads and landmarks',
     icon: CpuChipIcon,
-    href: '/app/extraction',
+    href: '/features',
     color: 'from-purple-500 to-purple-600'
   },
   {
-    id: 'fttb',
-    title: 'FTTB',
-    description: 'Fiber to the building network design',
-    icon: BuildingLibraryIcon,
-    href: '/app/fttb',
-    color: 'from-orange-500 to-orange-600'
+    id: 'accessories',
+    title: 'Accessories',
+    description: 'Add Network Accessories',
+    icon: WrenchScrewdriverIcon,
+    href: '/accessories',
+    color: 'from-red-500 to-red-600'
   },
   {
     id: 'ftth',
     title: 'FTTH',
     description: 'Fiber to the home network planning',
     icon: HomeModernIcon,
-    href: '/app/ftth',
+    href: '/ftth',
     color: 'from-teal-500 to-teal-600'
   },
   {
-    id: 'accessories',
-    title: 'Accessories',
-    description: 'Network equipment and hardware management',
-    icon: WrenchScrewdriverIcon,
-    href: '/app/accessories',
-    color: 'from-red-500 to-red-600'
+    id: 'fttb',
+    title: 'FTTB',
+    description: 'Fiber to the building network design',
+    icon: BuildingLibraryIcon,
+    href: '/fttb',
+    color: 'from-orange-500 to-orange-600'
+  },
+  {
+    id: 'survey',
+    title: 'Survey',
+    description: 'Field data collection and validation tools',
+    icon: ClipboardDocumentListIcon,
+    href: '/survey',
+    color: 'from-green-500 to-green-600'
+  },
+  {
+    id: 'learn',
+    title: 'Learn',
+    description: 'Training materials and documentation',
+    icon: AcademicCapIcon,
+    href: '/learn',
+    color: 'from-indigo-500 to-indigo-600'
   }
 ];
 

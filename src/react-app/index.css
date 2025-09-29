@@ -1,8 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+@import 'leaflet/dist/leaflet.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Leaflet-style controls */
+.leaflet-style-control {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+.leaflet-style-button {
+  background-color: transparent;
+  border: none;
+  width: 26px;
+  height: 42px; /* Match search bar height (py-2 = 8px top + 8px bottom + text height ≈ 42px) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Horizontal layout support */
+.leaflet-style-control.flex .leaflet-style-button {
+  border-bottom: none;
+  border-right: 1px solid #ccc;
+}
+
+.leaflet-style-control.flex .leaflet-style-button:last-child {
+  border-right: none;
+}
+
+.leaflet-style-button:last-child {
+  border-bottom: none;
+}
+
+.leaflet-style-button:hover {
+  background-color: #f4f4f4;
+}
+
+.leaflet-style-button:active,
+.leaflet-style-button.active {
+  background-color: #e4e4e4;
+}
+
+.leaflet-style-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.leaflet-style-button:disabled:hover {
+  background-color: transparent;
+}
+
+/* Search suggestions styling */
+.search-container .animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Advanced drawing tools styling */
+.leaflet-interactive {
+  outline: none !important;
+}
+
+/* Force visibility of drawing elements */
+.leaflet-overlay-pane svg path {
+  stroke-opacity: 1 !important;
+  fill-opacity: inherit !important;
+}
+
+.vertex-marker {
+  cursor: grab;
+  transition: all 0.2s ease-in-out;
+  z-index: 1000 !important;
+}
+
+.vertex-marker:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.6) !important;
+}
+
+.vertex-marker:active {
+  cursor: grabbing;
+}
+
+.start-vertex-marker {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  z-index: 1001 !important;
+}
+
+.start-vertex-marker:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.8) !important;
+}
+
+.temp-vertex-marker {
+  pointer-events: none;
+  transition: all 0.15s ease-in-out;
+  z-index: 999 !important;
+}
 
 :root {
   font-family: Urbanist, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -150,4 +258,172 @@
     background-color: var(--sidebar-background);
     border-right: 1px solid var(--border-color);
   }
+}
+
+/* Drawing Tools Styles - Based on atlas.css */
+.drawing-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.draw-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.draw-btn:hover {
+  background: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.draw-btn.active {
+  background: #ff6b35;
+  color: white;
+  box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
+}
+
+.draw-btn.active:hover {
+  background: #e55a2e;
+}
+
+/* Make vertex markers more visible - Enhanced from atlas.css approach */
+.vertex-marker {
+  background-color: #ff6b35 !important;
+  border: 3px solid white !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+  z-index: 1000 !important;
+  cursor: grab !important;
+}
+
+/* Temp vertex markers during drawing */
+.temp-vertex-marker {
+  background-color: #ff6b35 !important;
+  border: 2px solid white !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+  z-index: 999 !important;
+  cursor: pointer !important;
+}
+
+/* Hover effects for vertex markers */
+.vertex-marker:hover {
+  transform: scale(1.2) !important;
+  background-color: #ff4500 !important;
+  cursor: grabbing !important;
+}
+
+.temp-vertex-marker:hover {
+  transform: scale(1.1) !important;
+  background-color: #ff4500 !important;
+}
+
+/* Drawing shapes visibility enhancement */
+.leaflet-interactive {
+  stroke-width: 3 !important;
+  stroke-opacity: 0.9 !important;
+  fill-opacity: 0.3 !important;
+}
+
+/* Ensure drawing elements are always visible */
+.leaflet-pane-drawingPane {
+  z-index: 650 !important;
+}
+
+.leaflet-pane-drawingPane * {
+  pointer-events: auto !important;
+}
+
+/* Drawing feedback styles */
+.drawing-crosshair {
+  cursor: crosshair !important;
+}
+
+/* Polygon drawing styles */
+.drawing-polygon {
+  stroke: #ff6b35 !important;
+  stroke-width: 3 !important;
+  stroke-opacity: 0.9 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 0.2 !important;
+}
+
+/* Rectangle drawing styles */
+.drawing-rectangle {
+  stroke: #ff6b35 !important;
+  stroke-width: 3 !important;
+  stroke-opacity: 0.9 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 0.2 !important;
+}
+
+/* Specific classes for enhanced visibility */
+.drawing-polygon-final {
+  stroke: #ff6b35 !important;
+  stroke-width: 4 !important;
+  stroke-opacity: 1.0 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 0.4 !important;
+}
+
+.drawing-rectangle-final {
+  stroke: #ff6b35 !important;
+  stroke-width: 4 !important;
+  stroke-opacity: 1.0 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 0.4 !important;
+}
+
+.drawing-polyline-temp {
+  stroke: #ff6b35 !important;
+  stroke-width: 4 !important;
+  stroke-opacity: 1.0 !important;
+}
+
+.start-vertex-marker {
+  stroke: #ffffff !important;
+  stroke-width: 3 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 1.0 !important;
+}
+
+.drawing-vertex {
+  stroke: #ffffff !important;
+  stroke-width: 2 !important;
+  fill: #ff6b35 !important;
+  fill-opacity: 1.0 !important;
+}
+
+/* Force all drawing elements to be visible */
+.leaflet-pane-drawingPane path,
+.leaflet-pane-drawingPane circle {
+  visibility: visible !important;
+  display: block !important;
+  opacity: inherit !important;
+}
+
+/* Debug: Make drawing pane visible with border */
+.leaflet-pane-drawingPane {
+  border: 2px solid red !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+
+/* Allow child elements to be interactive while parent blocks events */
+.interactive-child {
+  pointer-events: auto !important;
 }

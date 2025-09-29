@@ -1,23 +1,22 @@
 import React, { useEffect } from 'react';
-import { Toaster } from 'react-hot-toast';
-import { Link } from 'react-router';
+import { Toaster } from 'sonner';
+import { Link } from 'react-router-dom';
 import { 
-  ArrowLeftIcon,
   Cog8ToothIcon,
   UserCircleIcon 
 } from '@heroicons/react/24/outline';
+import { ChevronLeft } from 'lucide-react';
 import { useStorage } from '@/react-app/context/StorageContext';
 
 interface AppLayoutProps {
   children: React.ReactNode;
   appName: string;
-  appDescription?: string;
+  appDescription?: string; // Keep for backward compatibility
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ 
   children, 
-  appName,
-  appDescription
+  appName
 }) => {
   const { logActivity } = useStorage();
 
@@ -36,33 +35,29 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     <div className="flex h-screen bg-lasomi-page">
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* App header */}
-        <header className="bg-lasomi-sidebar border-b border-border">
+        <header className="bg-lasomi-page border-b border-border">
           <div className="flex items-center justify-between h-16 px-6">
-            {/* Left section - Back button and app info */}
+            {/* Left section - Back button and breadcrumb */}
             <div className="flex items-center gap-4">
               <Link
                 to="/"
                 className="p-2 text-text-secondary hover:text-text-primary hover:bg-lasomi-secondary rounded-lg transition-colors"
                 title="Back to Dashboard"
               >
-                <ArrowLeftIcon className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" />
               </Link>
               
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md flex items-center justify-center">
-                  <img 
-                    src="https://mocha-cdn.com/019985a9-8d62-7868-8c28-6155548128b7/asomi.svg" 
-                    alt="Lasomi" 
-                    className="w-8 h-8"
-                  />
-                </div>
-                <div>
-                  <h1 className="text-lg font-semibold text-text-primary">{appName}</h1>
-                  {appDescription && (
-                    <p className="text-xs text-text-secondary">{appDescription}</p>
-                  )}
-                </div>
-              </div>
+              {/* Breadcrumb */}
+              <nav className="flex items-center text-2xl font-bold">
+                <Link 
+                  to="/" 
+                  className="text-text-secondary hover:text-text-primary transition-colors"
+                >
+                  Lasomi
+                </Link>
+                <span className="mx-2 text-text-secondary">›</span>
+                <span className="text-text-primary">{appName}</span>
+              </nav>
             </div>
 
             {/* Right section - User actions */}
@@ -85,9 +80,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
       {/* Toast notifications */}
       <Toaster
-        position="top-right"
+        position="bottom-right"
+        expand={false}
+        richColors
+        closeButton
+        duration={4000}
         toastOptions={{
-          duration: 4000,
           style: {
             background: 'var(--card-background)',
             color: 'var(--text-primary)',
