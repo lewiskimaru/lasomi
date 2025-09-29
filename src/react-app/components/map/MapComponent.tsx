@@ -82,6 +82,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const currentLayerRef = useRef<L.TileLayer | null>(null);
   const drawingLayerRef = useRef<L.LayerGroup | null>(null);
+  const testHandlersRef = useRef<{
+    basicClickHandler?: (e: L.LeafletMouseEvent) => void;
+    basicMoveHandler?: (e: L.LeafletMouseEvent) => void;
+    testClickHandler?: (e: L.LeafletMouseEvent) => void;
+    testMouseMoveHandler?: (e: L.LeafletMouseEvent) => void;
+  }>({});
   
   const [showLayerSelector, setShowLayerSelector] = useState(false);
   const [currentMapType, setCurrentMapType] = useState<keyof typeof mapSources>('hybrid');
@@ -101,6 +107,32 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // Handle manual drawing tool activation/deactivation
   const startDrawing = (mode: 'polygon' | 'rectangle') => {
     console.log('🎯 Starting drawing mode:', mode);
+    
+    // 🔥 CRITICAL: Remove ALL test handlers that interfere with drawing
+    if (mapInstanceRef.current) {
+      const map = mapInstanceRef.current;
+      
+      // Remove basic test handlers
+      if (testHandlersRef.current.basicClickHandler) {
+        console.log('🧪 Removing interfering basicClickHandler');
+        map.off('click', testHandlersRef.current.basicClickHandler);
+      }
+      if (testHandlersRef.current.basicMoveHandler) {
+        console.log('🧪 Removing interfering basicMoveHandler');
+        map.off('mousemove', testHandlersRef.current.basicMoveHandler);
+      }
+      
+      // Remove additional test handlers
+      if (testHandlersRef.current.testClickHandler) {
+        console.log('🧪 Removing interfering testClickHandler');
+        map.off('click', testHandlersRef.current.testClickHandler);
+      }
+      if (testHandlersRef.current.testMouseMoveHandler) {
+        console.log('🧪 Removing interfering testMouseMoveHandler');
+        map.off('mousemove', testHandlersRef.current.testMouseMoveHandler);
+      }
+    }
+    
     console.log('🎯 Current activeDrawingTool:', activeDrawingTool);
     console.log('🎯 Map instance exists:', !!mapInstanceRef.current);
     console.log('🎯 Drawing layer exists:', !!drawingLayerRef.current);
@@ -137,7 +169,26 @@ const MapComponent: React.FC<MapComponentProps> = ({
     onDrawingStateChange?.(false);
     
     if (mapInstanceRef.current) {
-      mapInstanceRef.current.getContainer().style.cursor = '';
+      const map = mapInstanceRef.current;
+      map.getContainer().style.cursor = '';
+      
+      // 🧪 Restore ALL test handlers when drawing stops
+      if (testHandlersRef.current.basicClickHandler) {
+        console.log('🧪 Restoring basicClickHandler');
+        map.on('click', testHandlersRef.current.basicClickHandler);
+      }
+      if (testHandlersRef.current.basicMoveHandler) {
+        console.log('🧪 Restoring basicMoveHandler'); 
+        map.on('mousemove', testHandlersRef.current.basicMoveHandler);
+      }
+      if (testHandlersRef.current.testClickHandler) {
+        console.log('🧪 Restoring testClickHandler');
+        map.on('click', testHandlersRef.current.testClickHandler);
+      }
+      if (testHandlersRef.current.testMouseMoveHandler) {
+        console.log('🧪 Restoring testMouseMoveHandler');
+        map.on('mousemove', testHandlersRef.current.testMouseMoveHandler);
+      }
     }
     
     toast.info('Drawing tool deactivated');
@@ -406,6 +457,56 @@ const MapComponent: React.FC<MapComponentProps> = ({
     mapContainer.addEventListener('click', domClickHandler);
     
     console.log('🟣 Added DOM click listener to map container');
+    
+    // Test basic Leaflet events immediately after map creation
+    const testMapReady = () => {
+      console.log('🧪 Testing basic Leaflet events...');
+      
+      const basicClickHandler = (e: L.LeafletMouseEvent) => {
+        console.log('🟢 Basic Leaflet click works!', e.latlng);
+      };
+      
+      const basicMoveHandler = (e: L.LeafletMouseEvent) => {
+        console.log('🟡 Basic Leaflet mousemove works!', e.latlng);
+      };
+      
+      // Store handler references for later cleanup
+      testHandlersRef.current.basicClickHandler = basicClickHandler;
+      testHandlersRef.current.basicMoveHandler = basicMoveHandler;
+      
+      try {
+        map.on('click', basicClickHandler);
+        map.on('mousemove', basicMoveHandler);
+        console.log('🧪 Basic Leaflet event handlers attached successfully');
+      } catch (error) {
+        console.error('❌ Error attaching basic Leaflet events:', error);
+      }
+      
+        // Test if map is ready
+      try {
+        console.log('🧪 Map container size:', map.getContainer().offsetWidth, 'x', map.getContainer().offsetHeight);
+        console.log('🧪 Map size:', map.getSize());
+        console.log('🧪 Map center:', map.getCenter());
+        console.log('🧪 Map zoom:', map.getZoom());
+        
+        // Try to trigger map invalidation to ensure it's properly sized
+        map.invalidateSize();
+        console.log('🧪 Map size invalidated and recalculated');
+      } catch (error) {
+        console.error('❌ Error testing map properties:', error);
+      }
+    };
+    
+    // Try both immediately and after a short delay
+    testMapReady();
+    setTimeout(testMapReady, 100);
+    setTimeout(testMapReady, 500);
+    
+    // Also try listening to the 'load' event
+    map.whenReady(() => {
+      console.log('🧪 Map whenReady callback fired!');
+      testMapReady();
+    });
 
     // Cleanup function
     return () => {
@@ -441,6 +542,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
     
     console.log('🔥 Current drawing mode:', currentMode);
     console.log('🔥 Drawing layer contents:', drawingLayer.getLayers().length, 'layers');
+    console.log('🔥 Map instance ID:', (map as any)._leaflet_id);
+    console.log('🔥 Map container:', map.getContainer());
+    console.log('🔥 Map has events object:', !!(map as any)._events);
 
     if (currentMode && !isDrawing) {
       console.log('🔥 Starting drawing process for mode:', currentMode);
@@ -461,6 +565,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         let tempVertexMarkers: L.CircleMarker[] = [];
 
         const handleMapClick = (e: L.LeafletMouseEvent) => {
+          console.log('🔴🔴🔴 POLYGON HANDLER FIRED! 🔴🔴🔴');
           console.log('🔴 Polygon click detected at:', e.latlng);
           console.log('🔴 Current polygon coords length:', polygonCoords.length);
           console.log('🔴 Drawing layer:', drawingLayer);
@@ -590,10 +695,37 @@ const MapComponent: React.FC<MapComponentProps> = ({
         const testMouseMoveHandler = (e: L.LeafletMouseEvent) => {
           console.log('🟡 TEST: Mouse move on map:', e.latlng);
         };
+
+        // Store additional test handler references for cleanup during drawing
+        testHandlersRef.current.testClickHandler = testClickHandler;
+        testHandlersRef.current.testMouseMoveHandler = testMouseMoveHandler;
         
-        map.on('click', handleMapClick);
-        map.on('click', testClickHandler); // Additional test handler
-        map.on('mousemove', testMouseMoveHandler); // Test mouse moves
+        // Try multiple ways to attach events
+        console.log('🔴 Attempting to attach events to map...');
+        
+        try {
+          console.log('🔴 About to attach handleMapClick to map ID:', (map as any)._leaflet_id);
+          map.on('click', handleMapClick);
+          console.log('🔴 ✅ POLYGON CLICK HANDLER ATTACHED TO MAP!');
+          console.log('🔴 Map now has these event listeners:', Object.keys((map as any)._events || {}));
+        } catch (error) {
+          console.error('❌ Error attaching main click handler:', error);
+        }
+        
+        try {
+          map.on('click', testClickHandler);
+          console.log('🔴 Test click handler attached');
+        } catch (error) {
+          console.error('❌ Error attaching test click handler:', error);
+        }
+        
+        try {
+          map.on('mousemove', testMouseMoveHandler);
+          console.log('🔴 Mouse move handler attached');
+        } catch (error) {
+          console.error('❌ Error attaching mouse move handler:', error);
+        }
+        
         document.addEventListener('keydown', handleKeyPress);
         
         console.log('🔴 Attached polygon click handler to map');
