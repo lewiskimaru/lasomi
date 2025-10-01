@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlasomi Documentation - Geospatial Data Extraction Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/atlas.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/toast.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/docs.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{{ url_for('static', path='/js/toast.js') }}" defer></script>
+    <script src="{{ url_for('static', path='/js/docs.js') }}" defer></script>
+</head>
+<body>
+    <!-- Top Bar (consistent across pages) -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <i class="fas fa-satellite"></i>
+            <span>Atlasomi</span>
+        </div>
+        <div class="top-bar-center">
+            <input type="text" id="global-search" class="top-bar-search" placeholder="Search location...">
+            <div class="search-suggestions" id="search-suggestions"></div>
+        </div>
+        <div class="top-bar-right">
+            <select id="map-type-selector" class="map-view-selector">
+                <option value="streets">Street</option>
+                <option value="satellite" selected>Satellite</option>
+                <option value="terrain">Terrain</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="page-root" data-page="docs">
+    <!-- Mini Sidebar Navigation (consistent across pages) -->
+    <div class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/web/" class="sidebar-nav-item" title="Extract">
+                <i class="fas fa-map"></i>
+            </a>
+            <a href="/web/docs" class="sidebar-nav-item active" title="Documentation">
+                <i class="fas fa-book"></i>
+            </a>
+            <a href="/web/developer" class="sidebar-nav-item" title="Developer API">
+                <i class="fas fa-code"></i>
+            </a>
+            <a href="/docs" class="sidebar-nav-item" title="Swagger API">
+                <i class="fas fa-cog"></i>
+            </a>
+        </nav>
+    </div>
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <nav class="docs-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    <span>Atlasomi</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <h4>Getting Started</h4>
+                    <ul>
+                        <li><a href="#overview" class="nav-link active">Overview</a></li>
+                        <li><a href="#quick-start" class="nav-link">Quick Start</a></li>
+                        <li><a href="#web-interface" class="nav-link">Web Interface</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Features</h4>
+                    <ul>
+                        <li><a href="#data-sources" class="nav-link">Data Sources</a></li>
+                        <li><a href="#design-upload" class="nav-link">Design Upload</a></li>
+                        <li><a href="#export-formats" class="nav-link">Export Formats</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Advanced</h4>
+                    <ul>
+                        <li><a href="#performance" class="nav-link">Performance</a></li>
+                        <li><a href="#troubleshooting" class="nav-link">Troubleshooting</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>External Links</h4>
+                    <ul>
+                        <li><a href="/web/" class="nav-link external">
+                            <i class="fas fa-map"></i> Web Interface
+                        </a></li>
+                        <li><a href="/web/developer" class="nav-link external">
+                            <i class="fas fa-code"></i> Developer Docs
+                        </a></li>
+                        <li><a href="/docs" class="nav-link external">
+                            <i class="fas fa-book"></i> API Reference
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="docs-main">
+            <div class="docs-content">
+                <!-- Hero Section -->
+                <section id="overview" class="hero-section">
+                    <div class="hero-content">
+                        <h1>
+                            <i class="fas fa-globe-americas"></i>
+                            Atlasomi Geospatial Platform
+                        </h1>
+                        <p class="hero-subtitle">
+                            Automated geospatial data extraction for fiber network planning and infrastructure design
+                        </p>
+                        <div class="hero-stats">
+                            <div class="stat">
+                                <span class="stat-number">3.2B+</span>
+                                <span class="stat-label">Building Footprints</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">Global</span>
+                                <span class="stat-label">Coverage</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">80%</span>
+                                <span class="stat-label">Time Savings</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Problem Statement -->
+                <section class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> The Problem</h2>
+                    </div>
+                    <div class="problem-grid">
+                        <div class="problem-item">
+                            <i class="fas fa-clock"></i>
+                            <h3>Time-Consuming Manual Work</h3>
+                            <p>Engineers spend hours manually tracing building footprints and infrastructure for each route design.</p>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h3>Error-Prone Process</h3>
+                            <p>Manual tracing leads to inaccuracies and inconsistencies in network planning data.</p>
+                        </div>
+                        <div class="problem-item">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Reduced Productivity</h3>
+                            <p>Repetitive data collection tasks slow down network rollout projects and increase costs.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Solution -->
+                <section class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-lightbulb"></i> Our Solution</h2>
+                    </div>
+                    <div class="solution-content">
+                        <p class="solution-intro">
+                            Atlasomi automates the entire geospatial data collection process, delivering accurate,
+                            standardized data from multiple authoritative sources in formats optimized for your workflow.
+                        </p>
+                        <div class="solution-features">
+                            <div class="feature">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <h3>Simple Interface</h3>
+                                <p>Draw your area of interest directly on the map</p>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-database"></i>
+                                <h3>Multi-Source Data</h3>
+                                <p>Aggregate data from Microsoft, Google, and OpenStreetMap</p>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-download"></i>
+                                <h3>Multiple Formats</h3>
+                                <p>Export as KMZ, GeoJSON, or CSV for any workflow</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Start -->
+                <section id="quick-start" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-rocket"></i> Quick Start Guide</h2>
+                    </div>
+                    <div class="quick-start-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Access the Web Interface</h3>
+                                <p>Navigate to the <a href="/web/" class="inline-link">Atlasomi Web Interface</a> to get started.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Define Your Area</h3>
+                                <p>Use the drawing tools to create a polygon, rectangle, or place a marker for your area of interest.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Configure Data Sources</h3>
+                                <p>Select which data sources to include: buildings, roads, landmarks, or natural features.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Extract & Export</h3>
+                                <p>Click "Run" to process your request and download results in your preferred format.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Web Interface -->
+                <section id="web-interface" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-desktop"></i> Web Interface Features</h2>
+                    </div>
+                    <div class="interface-features">
+                        <div class="feature-card">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <h3>Interactive Map</h3>
+                            <ul>
+                                <li>Multiple map types (Satellite, Street, Terrain)</li>
+                                <li>Drawing tools for precise area selection</li>
+                                <li>Real-time coordinate display</li>
+                                <li>Zoom and pan controls</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-upload"></i>
+                            <h3>Design Upload</h3>
+                            <ul>
+                                <li>Support for GeoJSON, KML, and KMZ files</li>
+                                <li>Automatic map navigation to uploaded designs</li>
+                                <li>Layer visibility controls</li>
+                                <li>Visual reference for AOI tracing</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-cogs"></i>
+                            <h3>Configuration</h3>
+                            <ul>
+                                <li>Data source selection and toggles</li>
+                                <li>Output format preferences</li>
+                                <li>Processing options</li>
+                                <li>Export settings</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Sources -->
+                <section id="data-sources" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-database"></i> Available Data Sources</h2>
+                    </div>
+                    <div class="data-sources-grid">
+                        <div class="data-source">
+                            <div class="source-header">
+                                <i class="fab fa-microsoft"></i>
+                                <h3>Microsoft Building Footprints</h3>
+                            </div>
+                            <div class="source-stats">
+                                <span class="stat">1.4B+ Buildings</span>
+                                <span class="coverage">Global Coverage</span>
+                            </div>
+                            <p>High-quality building footprints with height estimates, updated monthly from satellite imagery and AI detection.</p>
+                            <div class="source-features">
+                                <span class="feature-tag">Height Data</span>
+                                <span class="feature-tag">High Accuracy</span>
+                                <span class="feature-tag">Regular Updates</span>
+                            </div>
+                        </div>
+                        
+                        <div class="data-source">
+                            <div class="source-header">
+                                <i class="fab fa-google"></i>
+                                <h3>Google Open Buildings</h3>
+                            </div>
+                            <div class="source-stats">
+                                <span class="stat">1.8B+ Buildings</span>
+                                <span class="coverage">Global South Focus</span>
+                            </div>
+                            <p>AI-detected building footprints focusing on Africa, Latin America, and South-East Asia regions.</p>
+                            <div class="source-features">
+                                <span class="feature-tag">AI Detection</span>
+                                <span class="feature-tag">Emerging Markets</span>
+                                <span class="feature-tag">Open License</span>
+                            </div>
+                        </div>
+                        
+                        <div class="data-source">
+                            <div class="source-header">
+                                <i class="fas fa-map"></i>
+                                <h3>OpenStreetMap</h3>
+                            </div>
+                            <div class="source-stats">
+                                <span class="stat">Multiple Layers</span>
+                                <span class="coverage">Global Coverage</span>
+                            </div>
+                            <p>Crowdsourced geographic data including buildings, roads, railways, landmarks, and natural features.</p>
+                            <div class="source-features">
+                                <span class="feature-tag">Real-time</span>
+                                <span class="feature-tag">Community Driven</span>
+                                <span class="feature-tag">Rich Attributes</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Design Upload -->
+                <section id="design-upload" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-file-upload"></i> Design File Upload</h2>
+                    </div>
+                    <div class="upload-info">
+                        <p>Upload your existing design files to use as visual reference while defining your area of interest.</p>
+                        
+                        <div class="supported-formats">
+                            <h3>Supported Formats</h3>
+                            <div class="format-list">
+                                <div class="format-item">
+                                    <i class="fas fa-file-code"></i>
+                                    <div>
+                                        <strong>GeoJSON</strong>
+                                        <p>Standard geospatial format with feature properties</p>
+                                    </div>
+                                </div>
+                                <div class="format-item">
+                                    <i class="fas fa-globe"></i>
+                                    <div>
+                                        <strong>KML</strong>
+                                        <p>Google Earth format with styling and folders</p>
+                                    </div>
+                                </div>
+                                <div class="format-item">
+                                    <i class="fas fa-file-archive"></i>
+                                    <div>
+                                        <strong>KMZ</strong>
+                                        <p>Compressed KML files with embedded resources</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="upload-benefits">
+                            <h3>Benefits</h3>
+                            <ul>
+                                <li>Automatic map navigation to your design area</li>
+                                <li>Layer-based organization with visibility controls</li>
+                                <li>Visual reference for precise AOI tracing</li>
+                                <li>Preserved styling and folder structure</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Export Formats -->
+                <section id="export-formats" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-download"></i> Export Formats</h2>
+                    </div>
+                    <div class="export-formats-grid">
+                        <div class="export-format">
+                            <i class="fas fa-globe"></i>
+                            <h3>KMZ (Recommended)</h3>
+                            <p>Optimized for Google Earth with custom styling, folders, and embedded resources. Perfect for visualization and presentation.</p>
+                            <div class="format-features">
+                                <span class="feature-tag">Google Earth</span>
+                                <span class="feature-tag">Styled</span>
+                                <span class="feature-tag">Compressed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="export-format">
+                            <i class="fas fa-code"></i>
+                            <h3>GeoJSON</h3>
+                            <p>Standard web format for GIS applications, web mapping, and programmatic analysis. Includes all feature properties.</p>
+                            <div class="format-features">
+                                <span class="feature-tag">Web Standard</span>
+                                <span class="feature-tag">GIS Compatible</span>
+                                <span class="feature-tag">JSON Format</span>
+                            </div>
+                        </div>
+                        
+                        <div class="export-format">
+                            <i class="fas fa-table"></i>
+                            <h3>CSV</h3>
+                            <p>Tabular format for spreadsheet analysis and reporting. Includes coordinates and all available attributes.</p>
+                            <div class="format-features">
+                                <span class="feature-tag">Spreadsheet</span>
+                                <span class="feature-tag">Analysis</span>
+                                <span class="feature-tag">Universal</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Performance -->
+                <section id="performance" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tachometer-alt"></i> Performance Guidelines</h2>
+                    </div>
+                    <div class="performance-content">
+                        <div class="performance-table">
+                            <h3>Processing Time Estimates</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>AOI Size</th>
+                                        <th>Processing Time</th>
+                                        <th>Memory Usage</th>
+                                        <th>Output Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>&lt; 1 km²</td>
+                                        <td>&lt; 30 seconds</td>
+                                        <td>&lt; 500 MB</td>
+                                        <td>&lt; 5 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1-10 km²</td>
+                                        <td>1-2 minutes</td>
+                                        <td>&lt; 1 GB</td>
+                                        <td>5-50 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 10 km²</td>
+                                        <td>2-10 minutes</td>
+                                        <td>&lt; 2 GB</td>
+                                        <td>50-500 MB</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="performance-tips">
+                            <h3>Optimization Tips</h3>
+                            <ul>
+                                <li><strong>Start Small:</strong> Test with smaller areas first to understand data density</li>
+                                <li><strong>Select Relevant Sources:</strong> Only enable data sources you actually need</li>
+                                <li><strong>Use Appropriate Formats:</strong> KMZ for visualization, GeoJSON for analysis</li>
+                                <li><strong>Consider Area Density:</strong> Urban areas have more features and take longer to process</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section id="troubleshooting" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tools"></i> Troubleshooting</h2>
+                    </div>
+                    <div class="troubleshooting-content">
+                        <div class="faq-item">
+                            <h3><i class="fas fa-question-circle"></i> Processing takes too long</h3>
+                            <p>Large areas or high-density urban regions take more time. Try reducing the AOI size or selecting fewer data sources.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3><i class="fas fa-question-circle"></i> No data returned</h3>
+                            <p>Some regions may have limited data coverage. Try different data sources or check if the area has known coverage.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3><i class="fas fa-question-circle"></i> File upload fails</h3>
+                            <p>Ensure your file is under 50MB and in a supported format (GeoJSON, KML, KMZ). Check that the file is valid.</p>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <h3><i class="fas fa-question-circle"></i> Map not loading</h3>
+                            <p>Check your internet connection and try refreshing the page. Some corporate firewalls may block map tiles.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="docs-footer">
+                    <div class="footer-content">
+                        <div class="footer-section">
+                            <h4>Resources</h4>
+                            <ul>
+                                <li><a href="/web/">Web Interface</a></li>
+                                <li><a href="/web/developer">Developer Docs</a></li>
+                                <li><a href="/docs">API Reference</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h4>Data Sources</h4>
+                            <ul>
+                                <li><a href="https://github.com/microsoft/GlobalMLBuildingFootprints" target="_blank">Microsoft Buildings</a></li>
+                                <li><a href="https://sites.research.google/open-buildings/" target="_blank">Google Open Buildings</a></li>
+                                <li><a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h4>Support</h4>
+                            <ul>
+                                <li><a href="mailto:lewis@atomio.tech">Contact Support</a></li>
+                                <li><a href="https://github.com/lewiskimaru/atlasomi" target="_blank">GitHub Repository</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>&copy; 2024 Atlasomi Geospatial Platform. Built for telecom infrastructure planning.</p>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

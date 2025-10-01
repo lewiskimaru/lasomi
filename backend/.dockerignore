@@ -1,0 +1,79 @@
+# Docker ignore file for Atlas GIS API - HuggingFace Spaces
+
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Environment files (HF Spaces uses environment variables from Space settings)
+.env*
+!.env.template
+
+# Development and testing
+tests/
+test_*
+*_test.py
+pytest.ini
+.pytest_cache/
+
+# Documentation (already in repo)
+docs/
+*.md
+!README_SPACES.md
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.coverage
+htmlcov/
+.tox/
+.cache
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Application specific
+temp_exports/
+logs/
+*.log
+
+# Keys and secrets (will be set via environment variables)
+keys/
+*.json
+*.pem
+*.key
+
+# Large datasets or cache
+cache/
+*.parquet
+*.feather
+*.h5
+
+# Development tools
+Dockerfile.dev
+docker-compose*.yml
+.dockerignore.dev

@@ -1,0 +1,66 @@
+/* Minimal toast styles for Atlas */
+:root {
+  --toast-bg: var(--card-background, #132f35);
+  --toast-fg: var(--text-primary, #fff);
+  --toast-muted: var(--text-secondary, #b0c4c8);
+  --toast-border: var(--border-color, rgba(255,255,255,0.1));
+  --toast-success: var(--success-color, #059669);
+  --toast-error: var(--danger-color, #dc2626);
+  --toast-info: var(--primary-color, #0e5a81);
+  --toast-warning: var(--warning-color, #d97706);
+  --toast-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.3));
+  --toast-radius: var(--radius-md, 8px);
+}
+
+#toast-root {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 20000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 280px;
+  max-width: 380px;
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  border: 1px solid var(--toast-border);
+  border-radius: var(--toast-radius);
+  box-shadow: var(--toast-shadow);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 10px;
+  align-items: start;
+  pointer-events: auto;
+}
+
+.toast .icon { font-size: 16px; line-height: 1; margin-top: 2px; }
+.toast .content { display: flex; flex-direction: column; gap: 4px; }
+.toast .title { font-weight: 600; }
+.toast .message { color: var(--toast-muted); font-size: 0.92rem; }
+.toast .actions { display: flex; gap: 8px; align-items: center; }
+.toast .close { background: none; border: none; color: var(--toast-muted); cursor: pointer; font-size: 16px; }
+.toast .close:hover { color: var(--toast-fg); }
+
+.toast.success { border-left: 3px solid var(--toast-success); }
+.toast.error { border-left: 3px solid var(--toast-error); }
+.toast.info { border-left: 3px solid var(--toast-info); }
+.toast.loading { border-left: 3px solid var(--toast-info); }
+.toast.warning { border-left: 3px solid var(--toast-warning); }
+
+/* Spinner */
+.toast .spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+  .toast .spinner { animation: none; }
+}

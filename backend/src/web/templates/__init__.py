@@ -1,0 +1,1 @@
+# Create templates directory structure

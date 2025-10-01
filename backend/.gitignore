@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# GIS Data Files
+*.shp
+*.dbf
+*.shx
+*.prj
+*.cpg
+*.qpj
+*.sbn
+*.sbx
+*.xml
+*.fgb
+*.gpkg
+*.mdb
+*.gdb/
+*.kml
+#*.kmz
+#*.geojson
+data/
+cache/
+*.tif
+*.tiff
+*.img
+*.jp2
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Configuration
+config/local.yaml
+config/production.yaml
+*.env
+api_keys.yaml
+# Security: Never commit credentials
+keys/
+.env
+.env.cloud
+extract_env_vars.py
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+temp_exports/
+tests/
+*.tmp
+*.temp

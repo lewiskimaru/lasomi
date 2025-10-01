@@ -1,0 +1,17 @@
+{
+"type": "FeatureCollection",
+"name": "Osm Landmarks",
+"features": [
+{ "type": "Feature", "properties": { "Name": "Uhuru Cafe" }, "geometry": { "type": "Point", "coordinates": [ 36.8183732, -1.2658506, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Bereri Ladies Hostels" }, "geometry": { "type": "Point", "coordinates": [ 36.818084, -1.2655995, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Wambugu Grove Hotel" }, "geometry": { "type": "Point", "coordinates": [ 36.8172319, -1.2658043, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Waste Transfer Station" }, "geometry": { "type": "Point", "coordinates": [ 36.8163487, -1.2636715, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Waste Disposal" }, "geometry": { "type": "Point", "coordinates": [ 36.8163767, -1.2634401, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Hospital Hill School- Primary" }, "geometry": { "type": "Point", "coordinates": [ 36.814922, -1.264323, 0.0 ] } },
+{ "type": "Feature", "properties": { "Name": "Hospital Hill Primary School" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 36.8146315, -1.2658727, 0.0 ], [ 36.8149187, -1.2682289, 0.0 ], [ 36.8155485, -1.2686139, 0.0 ], [ 36.8157007, -1.2683616, 0.0 ], [ 36.8159087, -1.2680187, 0.0 ], [ 36.8161501, -1.2676043, 0.0 ], [ 36.816566, -1.2668851, 0.0 ], [ 36.8164269, -1.2665994, 0.0 ], [ 36.8150248, -1.2659398, 0.0 ], [ 36.8147557, -1.2658028, 0.0 ], [ 36.8146315, -1.2658727, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "Name": "Avenue Hospital" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 36.817366, -1.2647178, 0.0 ], [ 36.81765, -1.2648787, 0.0 ], [ 36.8177323, -1.2647335, 0.0 ], [ 36.817437, -1.2645662, 0.0 ], [ 36.8173838, -1.26466, 0.0 ], [ 36.8173952, -1.2646664, 0.0 ], [ 36.817366, -1.2647178, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "Name": "Oshwal Sports Complex" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 36.8191858, -1.2658433, 0.0 ], [ 36.8190653, -1.2660361, 0.0 ], [ 36.8192177, -1.2661314, 0.0 ], [ 36.8193382, -1.2659385, 0.0 ], [ 36.8191858, -1.2658433, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "Name": "Swimming Pool" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 36.8148056, -1.2661094, 0.0 ], [ 36.8148486, -1.2663457, 0.0 ], [ 36.8149537, -1.2663218, 0.0 ], [ 36.8149083, -1.2660927, 0.0 ], [ 36.8148056, -1.2661094, 0.0 ] ] ] } },
+{ "type": "Feature", "properties": { "Name": "Park" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 36.815935, -1.2641855, 0.0 ], [ 36.816206, -1.2637214, 0.0 ], [ 36.8157818, -1.2635046, 0.0 ], [ 36.815499, -1.2639499, 0.0 ], [ 36.815935, -1.2641855, 0.0 ] ] ] } }
+]
+}

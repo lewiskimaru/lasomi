@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlasomi Developer Documentation - API Reference & Examples</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/atlas.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/toast.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/docs.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="{{ url_for('static', path='/js/toast.js') }}" defer></script>
+    <script src="{{ url_for('static', path='/js/docs.js') }}" defer></script>
+</head>
+<body>
+    <!-- Top Bar (consistent across pages) -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <i class="fas fa-satellite"></i>
+            <span>Atlasomi</span>
+        </div>
+        <div class="top-bar-center">
+            <input type="text" id="global-search" class="top-bar-search" placeholder="Search location...">
+            <div class="search-suggestions" id="search-suggestions"></div>
+        </div>
+        <div class="top-bar-right">
+            <select id="map-type-selector" class="map-view-selector">
+                <option value="streets">Street</option>
+                <option value="satellite" selected>Satellite</option>
+                <option value="terrain">Terrain</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Mini Sidebar Navigation (consistent across pages) -->
+    <div class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/web/" class="sidebar-nav-item" title="Extract">
+                <i class="fas fa-map"></i>
+            </a>
+            <a href="/web/docs" class="sidebar-nav-item" title="Documentation">
+                <i class="fas fa-book"></i>
+            </a>
+            <a href="/web/developer" class="sidebar-nav-item active" title="Developer API">
+                <i class="fas fa-code"></i>
+            </a>
+            <a href="/docs" class="sidebar-nav-item" title="Swagger API">
+                <i class="fas fa-cog"></i>
+            </a>
+        </nav>
+    </div>
+    <div id="page-root" data-page="developer">
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <nav class="docs-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>Developer API</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <h4>Getting Started</h4>
+                    <ul>
+                        <li><a href="#overview" class="nav-link active">API Overview</a></li>
+                        <li><a href="#base-url" class="nav-link">Base URL</a></li>
+                        <li><a href="#authentication" class="nav-link">Authentication</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Core Endpoints</h4>
+                    <ul>
+                        <li><a href="#extract-v2" class="nav-link">Extract Data (v2)</a></li>
+                        <li><a href="#validate-aoi" class="nav-link">Validate AOI</a></li>
+                        <li><a href="#data-sources" class="nav-link">List Data Sources</a></li>
+                        <li><a href="#download" class="nav-link">Download Results</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Design Upload</h4>
+                    <ul>
+                        <li><a href="#upload-design" class="nav-link">Upload Design</a></li>
+                        <li><a href="#render-design" class="nav-link">Render Design</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Examples</h4>
+                    <ul>
+                        <li><a href="#curl-examples" class="nav-link">cURL Examples</a></li>
+                        <li><a href="#python-examples" class="nav-link">Python Examples</a></li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>External Links</h4>
+                    <ul>
+                        <li><a href="/web/" class="nav-link external">
+                            <i class="fas fa-map"></i> Web Interface
+                        </a></li>
+                        <li><a href="/web/docs" class="nav-link external">
+                            <i class="fas fa-book"></i> User Documentation
+                        </a></li>
+                        <li><a href="/docs" class="nav-link external">
+                            <i class="fas fa-cog"></i> Swagger UI
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="docs-main">
+            <div class="docs-content">
+                <!-- Hero Section -->
+                <section id="overview" class="hero-section">
+                    <div class="hero-content">
+                        <h1>
+                            <i class="fas fa-code"></i>
+                            Atlasomi Developer API
+                        </h1>
+                        <p class="hero-subtitle">
+                            RESTful API for automated geospatial data extraction with comprehensive examples and documentation
+                        </p>
+                        <div class="api-stats">
+                            <div class="stat">
+                                <span class="stat-number">v2</span>
+                                <span class="stat-label">Latest API Version</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">REST</span>
+                                <span class="stat-label">Architecture</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">JSON</span>
+                                <span class="stat-label">Response Format</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Base URL -->
+                <section id="base-url" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-link"></i> Base URL</h2>
+                    </div>
+                    <div class="code-block">
+                        <pre><code class="language-bash">https://your-atlasomi-instance.com/api/v2</code></pre>
+                    </div>
+                    <p>All API endpoints are relative to this base URL. Replace <code>your-atlasomi-instance.com</code> with your actual Atlasomi deployment URL.</p>
+                </section>
+
+                <!-- Authentication -->
+                <section id="authentication" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-key"></i> Authentication</h2>
+                    </div>
+                    <p>Currently, the Atlasomi API operates without authentication for development and testing purposes. In production deployments, API keys or OAuth2 authentication may be required.</p>
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <p><strong>Note:</strong> Authentication requirements may vary based on your deployment configuration.</p>
+                    </div>
+                </section>
+
+                <!-- Extract Data v2 -->
+                <section id="extract-v2" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-download"></i> Extract Geospatial Data (v2)</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method post">POST</span>
+                            <span class="url">/api/v2/extract</span>
+                        </div>
+                        <p>Extract raw geospatial data from multiple sources for a specified area of interest.</p>
+                    </div>
+
+                    <h3>Request Body</h3>
+                    <div class="code-block">
+                        <pre><code class="language-json">{
+  "aoi_boundary": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [36.8219, -1.2921],
+        [36.8250, -1.2921],
+        [36.8250, -1.2950],
+        [36.8219, -1.2950],
+        [36.8219, -1.2921]
+      ]
+    ]
+  },
+  "sources": {
+    "microsoft_buildings": {
+      "enabled": true,
+      "timeout": 30
+    },
+    "google_buildings": {
+      "enabled": true,
+      "timeout": 30
+    },
+    "osm_roads": {
+      "enabled": true,
+      "timeout": 25
+    }
+  },
+  "export_format": "kmz"
+}</code></pre>
+                    </div>
+
+                    <h3>Parameters</h3>
+                    <div class="params-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>aoi_boundary</code></td>
+                                    <td>GeoJSON Polygon</td>
+                                    <td>Yes</td>
+                                    <td>Area of interest boundary in GeoJSON format</td>
+                                </tr>
+                                <tr>
+                                    <td><code>sources</code></td>
+                                    <td>Object</td>
+                                    <td>Yes</td>
+                                    <td>Data source configuration with enable/disable flags</td>
+                                </tr>
+                                <tr>
+                                    <td><code>export_format</code></td>
+                                    <td>String</td>
+                                    <td>No</td>
+                                    <td>Immediate export format: "geojson", "kml", "kmz", or "csv"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">curl -X POST "https://your-atlasomi-instance.com/api/v2/extract" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aoi_boundary": {
+      "type": "Polygon",
+      "coordinates": [[[36.8219, -1.2921], [36.8250, -1.2921], [36.8250, -1.2950], [36.8219, -1.2950], [36.8219, -1.2921]]]
+    },
+    "sources": {
+      "microsoft_buildings": {"enabled": true},
+      "osm_roads": {"enabled": true}
+    }
+  }'</code></pre>
+                    </div>
+                </section>
+
+                <!-- Validate AOI -->
+                <section id="validate-aoi" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-check-circle"></i> Validate Area of Interest</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method post">POST</span>
+                            <span class="url">/api/v2/validate</span>
+                        </div>
+                        <p>Validate AOI geometry and get processing estimates before extraction.</p>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">curl -X POST "https://your-atlasomi-instance.com/api/v2/validate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aoi_boundary": {
+      "type": "Polygon", 
+      "coordinates": [[[36.8219, -1.2921], [36.8250, -1.2921], [36.8250, -1.2950], [36.8219, -1.2950], [36.8219, -1.2921]]]
+    }
+  }'</code></pre>
+                    </div>
+                </section>
+
+                <!-- Data Sources -->
+                <section id="data-sources" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-database"></i> List Available Data Sources</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method get">GET</span>
+                            <span class="url">/api/v2/sources</span>
+                        </div>
+                        <p>Get information about available data sources and their capabilities.</p>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">curl -X GET "https://your-atlasomi-instance.com/api/v2/sources"</code></pre>
+                    </div>
+                </section>
+
+                <!-- Download Results -->
+                <section id="download" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-file-download"></i> Download Results</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method get">GET</span>
+                            <span class="url">/api/v2/download/{job_id}/{format}</span>
+                        </div>
+                        <p>Download processed results in the specified format.</p>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash"># Download as KMZ file
+curl -X GET "https://your-atlasomi-instance.com/api/v2/download/550e8400-e29b-41d4-a716-446655440000/kmz" \
+  -o "extracted_data.kmz"
+
+# Download as GeoJSON
+curl -X GET "https://your-atlasomi-instance.com/api/v2/download/550e8400-e29b-41d4-a716-446655440000/geojson" \
+  -o "extracted_data.geojson"</code></pre>
+                    </div>
+                </section>
+
+                <!-- Upload Design -->
+                <section id="upload-design" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-upload"></i> Upload Design File</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method post">POST</span>
+                            <span class="url">/api/v2/designs/upload</span>
+                        </div>
+                        <p>Upload design files (GeoJSON, KML, KMZ) for map visualization and reference.</p>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">curl -X POST "https://your-atlasomi-instance.com/api/v2/designs/upload" \
+  -F "file=@network_design.kml"</code></pre>
+                    </div>
+                </section>
+
+                <!-- Render Design -->
+                <section id="render-design" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-eye"></i> Render Design on Map</h2>
+                    </div>
+                    
+                    <div class="endpoint-info">
+                        <div class="method-url">
+                            <span class="method post">POST</span>
+                            <span class="url">/api/v2/designs/render</span>
+                        </div>
+                        <p>Render uploaded design layers for map visualization.</p>
+                    </div>
+
+                    <h3>cURL Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash">curl -X POST "https://your-atlasomi-instance.com/api/v2/designs/render" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "design_id": "123e4567-e89b-12d3-a456-426614174000",
+    "layers": ["Fiber Routes", "Network Nodes"],
+    "simplified": true
+  }'</code></pre>
+                    </div>
+                </section>
+
+                <!-- cURL Examples -->
+                <section id="curl-examples" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-terminal"></i> Complete cURL Workflows</h2>
+                    </div>
+
+                    <h3>Basic Data Extraction Workflow</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash"># Step 1: Validate your AOI
+curl -X POST "https://your-atlasomi-instance.com/api/v2/validate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aoi_boundary": {
+      "type": "Polygon",
+      "coordinates": [[[36.8219, -1.2921], [36.8250, -1.2921], [36.8250, -1.2950], [36.8219, -1.2950], [36.8219, -1.2921]]]
+    }
+  }'
+
+# Step 2: Extract data from multiple sources
+curl -X POST "https://your-atlasomi-instance.com/api/v2/extract" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aoi_boundary": {
+      "type": "Polygon",
+      "coordinates": [[[36.8219, -1.2921], [36.8250, -1.2921], [36.8250, -1.2950], [36.8219, -1.2950], [36.8219, -1.2921]]]
+    },
+    "sources": {
+      "microsoft_buildings": {"enabled": true, "timeout": 30},
+      "google_buildings": {"enabled": true, "timeout": 30},
+      "osm_roads": {"enabled": true, "timeout": 25},
+      "osm_landmarks": {"enabled": true, "timeout": 25}
+    }
+  }' \
+  -o response.json
+
+# Step 3: Extract job_id from response and download results
+JOB_ID=$(cat response.json | grep -o '"job_id":"[^"]*' | cut -d'"' -f4)
+
+# Download as KMZ (recommended for Google Earth)
+curl -X GET "https://your-atlasomi-instance.com/api/v2/download/$JOB_ID/kmz" \
+  -o "extracted_data.kmz"</code></pre>
+                    </div>
+
+                    <h3>Design Upload and Rendering Workflow</h3>
+                    <div class="code-block">
+                        <pre><code class="language-bash"># Step 1: Upload design file
+curl -X POST "https://your-atlasomi-instance.com/api/v2/designs/upload" \
+  -F "file=@my_network_design.kml" \
+  -o upload_response.json
+
+# Step 2: Extract design_id from response
+DESIGN_ID=$(cat upload_response.json | grep -o '"design_id":"[^"]*' | cut -d'"' -f4)
+
+# Step 3: Render specific layers on map
+curl -X POST "https://your-atlasomi-instance.com/api/v2/designs/render" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"design_id\": \"$DESIGN_ID\",
+    \"layers\": [\"Fiber Routes\", \"Network Nodes\"],
+    \"simplified\": true
+  }" \
+  -o render_response.json</code></pre>
+                    </div>
+                </section>
+
+                <!-- Python Examples -->
+                <section id="python-examples" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fab fa-python"></i> Python Examples</h2>
+                    </div>
+
+                    <h3>Basic Data Extraction</h3>
+                    <div class="code-block">
+                        <pre><code class="language-python">import requests
+import json
+
+# Configuration
+BASE_URL = "https://your-atlasomi-instance.com/api/v2"
+
+# Define area of interest (Nairobi, Kenya example)
+aoi_polygon = {
+    "type": "Polygon",
+    "coordinates": [[
+        [36.8219, -1.2921],
+        [36.8250, -1.2921], 
+        [36.8250, -1.2950],
+        [36.8219, -1.2950],
+        [36.8219, -1.2921]
+    ]]
+}
+
+# Configure data sources
+sources = {
+    "microsoft_buildings": {"enabled": True, "timeout": 30},
+    "osm_roads": {"enabled": True, "timeout": 25},
+    "osm_landmarks": {"enabled": True, "timeout": 25}
+}
+
+# Make extraction request
+response = requests.post(
+    f"{BASE_URL}/extract",
+    json={
+        "aoi_boundary": aoi_polygon,
+        "sources": sources
+    }
+)
+
+if response.status_code == 200:
+    result = response.json()
+    job_id = result["job_id"]
+    print(f"Extraction started: {job_id}")
+    
+    # Download results
+    download_response = requests.get(
+        f"{BASE_URL}/download/{job_id}/geojson"
+    )
+    
+    if download_response.status_code == 200:
+        with open("extracted_data.geojson", "wb") as f:
+            f.write(download_response.content)
+        print("Data downloaded successfully!")
+else:
+    print(f"Error: {response.status_code} - {response.text}")</code></pre>
+                    </div>
+
+                    <h3>Design Upload Example</h3>
+                    <div class="code-block">
+                        <pre><code class="language-python">import requests
+
+BASE_URL = "https://your-atlasomi-instance.com/api/v2"
+
+# Upload design file
+with open("network_design.kml", "rb") as f:
+    files = {"file": f}
+    response = requests.post(f"{BASE_URL}/designs/upload", files=files)
+
+if response.status_code == 200:
+    result = response.json()
+    design_id = result["design_id"]
+    print(f"Design uploaded: {design_id}")
+    
+    # Render design on map
+    render_response = requests.post(
+        f"{BASE_URL}/designs/render",
+        json={
+            "design_id": design_id,
+            "layers": ["Fiber Routes", "Network Nodes"],
+            "simplified": True
+        }
+    )
+    
+    if render_response.status_code == 200:
+        render_data = render_response.json()
+        print(f"Rendered {render_data['total_features']} features")
+else:
+    print(f"Upload failed: {response.status_code}")</code></pre>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="docs-footer">
+                    <div class="footer-content">
+                        <div class="footer-section">
+                            <h4>API Resources</h4>
+                            <ul>
+                                <li><a href="/docs">Swagger UI</a></li>
+                                <li><a href="/redoc">ReDoc</a></li>
+                                <li><a href="/web/">Web Interface</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h4>Support</h4>
+                            <ul>
+                                <li><a href="mailto:lewis@atomio.tech">Contact Support</a></li>
+                                <li><a href="https://github.com/lewiskimaru/atlasomi" target="_blank">GitHub Repository</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>&copy; 2024 Atlasomi Geospatial Platform. Developer documentation for API integration.</p>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/atlas.css') }}?v=1" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/toast.css') }}?v=1" />
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <i class="fas fa-satellite"></i>
+            <span>Atlasomi</span>
+        </div>
+        <div class="top-bar-center">
+            <input type="text" id="global-search" class="top-bar-search" placeholder="Search location...">
+            <div class="search-suggestions" id="search-suggestions">
+                <!-- Dynamic search results will be populated here -->
+            </div>
+        </div>
+        <div class="top-bar-right">
+            <select id="map-type-selector" class="map-view-selector">
+                <option value="streets">Street</option>
+                <option value="satellite" selected>Satellite</option>
+                <option value="terrain">Terrain</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Layout Container -->
+    <div id="page-root" data-page="index">
+    <div class="layout-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item active" data-tab="extract" title="Extract">
+                    <i class="fas fa-map"></i>
+                </a>
+                <a href="/web/docs" class="sidebar-nav-item" title="Documentation">
+                    <i class="fas fa-book"></i>
+                </a>
+                <a href="/web/developer" class="sidebar-nav-item" title="Developer API">
+                    <i class="fas fa-code"></i>
+                </a>
+                <a href="/docs" class="sidebar-nav-item" title="Swagger API">
+                    <i class="fas fa-cog"></i>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <!-- Area of Interest Card -->
+                <div class="content-card aoi-card">
+                    <div class="card-header">
+                        <h3>Area of Interest</h3>
+                        <div class="header-actions">
+                            <button class="icon-btn settings-btn" id="settings-btn" title="Settings">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden file input -->
+                    <input type="file" id="design-file" accept=".geojson,.json,.kml,.kmz" style="display: none;">
+                    
+                    <!-- Area Information Display -->
+                    <div class="area-info">
+                        <!-- Design Information Accordion (moved above AOI) -->
+                        <div class="accordion">
+                            <button class="accordion-toggle" id="design-toggle">
+                                <span>Upload Design</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="accordion-content" id="design-content" style="display: none;">
+                                <div class="info-item">
+                                    <span class="info-label">Design File:</span>
+                                    <span class="info-value" id="design-filename">None</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Layers:</span>
+                                    <div class="design-layers" id="design-layers">
+                                        <p class="empty-message">No design uploaded</p>
+                                    </div>
+                                </div>
+                                <div class="upload-section">
+                                    <button class="btn btn-secondary upload-btn" id="upload-btn" title="Upload Design File">
+                                        <i class="fas fa-upload"></i>
+                                        <span>Upload File</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Area of Interest Accordion -->
+                        <div class="accordion">
+                            <button class="accordion-toggle expanded" id="aoi-toggle">
+                                <span>Area of Interest</span>
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <div class="accordion-content" id="aoi-content">
+                                <div class="info-item">
+                                    <span class="info-value" id="aoi-area">No area defined</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Coordinates:</span>
+                                    <span class="info-value" id="aoi-coords">None</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="aoi-actions right-aligned">
+                        <button id="clear-btn" class="btn btn-link">
+                            Clear
+                        </button>
+                        <button id="run-btn" class="btn btn-primary" disabled>
+                            <i class="fas fa-play"></i> Run
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Card -->
+                <div class="content-card results-card" id="results-card">
+                    <div class="card-header">
+                        <h3>Results</h3>
+                        <div class="header-actions">
+                            <button id="download-btn" class="btn btn-success" disabled>
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-empty" id="results-empty">
+                        <p class="empty-message">No results yet. Run analysis to see results here.</p>
+                    </div>
+                    
+                    <div class="results-content" id="results-content" style="display: none;">
+                        <!-- Layer Controls -->
+                        <div class="layer-controls">
+                            <div id="layer-toggles">
+                                <!-- Dynamic layer toggles will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- API Response Status -->
+                        <div class="api-status">
+                            <div class="status-indicator">
+                                <span class="status-label">Status:</span>
+                                <span class="status-value" id="api-status">-</span>
+                            </div>
+                        </div>
+                        
+                        <!-- API Response Details -->
+                        <div class="api-response">
+                            <button class="response-toggle" id="response-toggle">
+                                <i class="fas fa-chevron-right"></i>
+                                View API Response
+                            </button>
+                            <div class="response-content" id="response-content">
+                                <pre id="response-data"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Panel -->
+            <div class="map-panel">
+                <!-- Zoom Controls - Bottom Left -->
+                <div class="zoom-controls">
+                    <button id="zoom-in" class="zoom-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="zoom-out" class="zoom-btn">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+                
+                <!-- Drawing Controls - Top Left -->
+                <div class="drawing-controls">
+                    <button id="draw-marker" class="draw-btn active" title="Drawing Mode" aria-label="Activate drawing mode">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button id="draw-polygon" class="draw-btn" title="Draw Polygon" aria-label="Draw polygon shape">
+                        <i class="fas fa-draw-polygon"></i>
+                    </button>
+                    <button id="draw-rectangle" class="draw-btn" title="Draw Rectangle" aria-label="Draw rectangle shape">
+                        <i class="far fa-square"></i>
+                    </button>
+                    <button id="delete-shape" class="draw-btn" title="Delete Shape" aria-label="Delete drawn shapes">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </div>
+
+                <!-- Map Container -->
+                <div id="map" class="map-container"></div>
+
+                <!-- Layer Cycling Control - Top Right -->
+                <div class="layer-cycling-control">
+                    <button id="layer-cycle-btn" class="layer-cycle-btn" title="Cycle Map Sources">
+                        <i class="fas fa-layers"></i>
+                        <span id="current-source-name">Google Hybrid</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Configuration Settings</h3>
+                <div class="modal-header-buttons">
+                    <button id="settings-cancel" class="btn btn-secondary btn-sm">Cancel</button>
+                    <button id="settings-apply" class="btn btn-primary btn-sm">Apply</button>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Output Format Section -->
+                <div class="settings-section">
+                    <h4>Output Format</h4>
+                    <div class="format-selector">
+                        <label class="radio-option">
+                            <input type="radio" name="output-format" value="kmz" checked>
+                            <span class="radio-custom"></span>
+                            <span>KMZ (Google Earth)</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="output-format" value="geojson">
+                            <span class="radio-custom"></span>
+                            <span>GeoJSON</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="output-format" value="csv">
+                            <span class="radio-custom"></span>
+                            <span>CSV</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Data Sources Section -->
+                <div class="settings-section">
+                    <h4>Data Sources</h4>
+                    
+                    <!-- Data Source Enable/Disable Toggles -->
+                    <div class="data-source-toggles">
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-google-buildings" checked>
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">Google Buildings</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-microsoft-buildings">
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">Microsoft Buildings</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-osm-buildings">
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">OSM Buildings</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-osm-roads" checked>
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">OSM Roads</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-osm-railways">
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">OSM Railways</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-osm-landmarks" checked>
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">OSM Landmarks</span>
+                            </label>
+                        </div>
+                        
+                        <div class="source-toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="toggle-osm-natural" checked>
+                                <span class="toggle-custom"></span>
+                                <span class="toggle-text">OSM Natural</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Map Sources Section -->
+                <div class="settings-section">
+                    <h4>Map Sources</h4>
+                    <p class="section-description">Select preferred tile sources for each map type</p>
+                    
+                    <div class="map-source-setting">
+                        <label for="street-source-setting">Street Maps:</label>
+                        <select id="street-source-setting" class="form-select">
+                            <option value="osm">OpenStreetMap</option>
+                            <option value="google">Google Streets</option>
+                            <option value="carto_light">CartoDB Light</option>
+                            <option value="carto_dark">CartoDB Dark</option>
+                            <option value="wikimedia">Wikimedia</option>
+                        </select>
+                    </div>
+                    
+                    <div class="map-source-setting">
+                        <label for="satellite-source-setting">Satellite Maps:</label>
+                        <select id="satellite-source-setting" class="form-select">
+                            <option value="esri">Esri World Imagery</option>
+                            <option value="google">Google Satellite</option>
+                            <option value="google_hybrid">Google Hybrid (Satellite + Labels)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="map-source-setting">
+                        <label for="terrain-source-setting">Terrain Maps:</label>
+                        <select id="terrain-source-setting" class="form-select">
+                            <option value="opentopo">OpenTopoMap</option>
+                            <option value="google">Google Terrain</option>
+                            <option value="stamen">Stamen Terrain</option>
+                            <option value="usgs">USGS Topo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Processing Options Section -->
+                <div class="settings-section">
+                    <h4>Processing Options</h4>
+
+                    <!-- Buildings -->
+                    <div class="option-setting">
+                        <strong>Buildings</strong>
+                    </div>
+                    <div class="option-setting">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="clean-data-setting" checked>
+                            <span class="checkmark-custom"></span>
+                            <span>Clean Buildings Data</span>
+                        </label>
+                    </div>
+                    <div class="option-setting">
+                        <label for="min-building-area-setting">Min Area (m²):</label>
+                        <input type="number" id="min-building-area-setting" value="12" min="0" class="form-input">
+                    </div>
+                    <div class="option-setting">
+                        <label for="simplification-setting">Simplify Tolerance:</label>
+                        <input type="number" id="simplification-setting" value="0.001" step="0.001" min="0" max="1" class="form-input">
+                    </div>
+                    <!-- Advanced building shape filters -->
+                    <div class="option-setting">
+                        <label for="google-confidence-setting">Min Confidence (Google):</label>
+                        <input type="number" id="google-confidence-setting" value="0.70" step="0.01" min="0" max="1" class="form-input">
+                    </div>
+                    <div class="option-setting">
+                        <label for="osm-min-area-setting">OSM Min Area (m²):</label>
+                        <input type="number" id="osm-min-area-setting" value="12" min="0" class="form-input">
+                    </div>
+                    <div class="option-setting">
+                        <label for="min-width-setting">Min Width (m):</label>
+                        <input type="number" id="min-width-setting" value="3" step="0.5" min="0" class="form-input">
+                    </div>
+                    <div class="option-setting">
+                        <label for="min-compactness-setting">Min Compactness:</label>
+                        <input type="number" id="min-compactness-setting" value="0.12" step="0.01" min="0" max="1" class="form-input">
+                    </div>
+                    <div class="option-setting">
+                        <label for="max-elongation-setting">Max Elongation:</label>
+                        <input type="number" id="max-elongation-setting" value="6" step="0.5" min="1" class="form-input">
+                    </div>
+
+                    <!-- Roads -->
+                    <div class="option-setting" style="margin-top:8px;">
+                        <strong>Roads</strong>
+                    </div>
+                    <div class="option-setting">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="clean-roads-setting" checked>
+                            <span class="checkmark-custom"></span>
+                            <span>Clean Roads Data</span>
+                        </label>
+                    </div>
+                    <div class="option-setting vertical">
+                        <label>Road Types:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" value="primary" checked>
+                                <span class="checkmark-custom"></span>
+                                <span>Primary</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" value="secondary" checked>
+                                <span class="checkmark-custom"></span>
+                                <span>Secondary</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" value="residential" checked>
+                                <span class="checkmark-custom"></span>
+                                <span>Residential</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" value="motorway">
+                                <span class="checkmark-custom"></span>
+                                <span>Motorway</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-download"></i> Export Data</h3>
+            </div>
+            
+            <div class="modal-body">
+                <div class="export-options">
+                    <h4>Select Export Format</h4>
+                    <div class="format-grid">
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="geojson" checked>
+                            <div class="format-card">
+                                <i class="fas fa-code"></i>
+                                <span>GeoJSON</span>
+                                <small>Web standard format</small>
+                            </div>
+                        </label>
+                        
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="kml">
+                            <div class="format-card">
+                                <i class="fas fa-globe"></i>
+                                <span>KML</span>
+                                <small>Google Earth format</small>
+                            </div>
+                        </label>
+                        
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="shapefile">
+                            <div class="format-card">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <span>Shapefile</span>
+                                <small>GIS standard format</small>
+                            </div>
+                        </label>
+                        
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="csv">
+                            <div class="format-card">
+                                <i class="fas fa-table"></i>
+                                <span>CSV</span>
+                                <small>Spreadsheet format</small>
+                            </div>
+                        </label>
+                        
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="dwg">
+                            <div class="format-card">
+                                <i class="fas fa-drafting-compass"></i>
+                                <span>DWG</span>
+                                <small>CAD format</small>
+                            </div>
+                        </label>
+                        
+                        <label class="format-option">
+                            <input type="radio" name="export-format" value="kmz">
+                            <div class="format-card">
+                                <i class="fas fa-file-archive"></i>
+                                <span>KMZ</span>
+                                <small>Compressed KML</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="export-sources">
+                    <h4>Select Data Sources</h4>
+                    <div class="source-checkboxes">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="export-metadata">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-metadata" checked>
+                        <span class="checkmark"></span>
+                        <span>Include processing metadata</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="cancel-export" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-export" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+
+            <!-- Export Progress -->
+            <div id="export-progress" class="export-progress hidden">
+                <div class="progress-content">
+                    <div class="spinner"></div>
+                    <h4>Preparing Export</h4>
+                    <p id="export-message">Processing data...</p>
+                    <div class="progress-bar">
+                        <div id="export-progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    <script src="{{ url_for('static', path='/js/toast.js') }}?v=1"></script>
+    <script src="{{ url_for('static', path='/js/atlas.js') }}?v=1"></script>
+</body>
+</html>

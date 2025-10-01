@@ -1,0 +1,119 @@
+#Example dockerfle for huggingface spaces
+
+
+
+# Dockerfile for Marine Species Identification API on HuggingFace Spaces
+# Multi-stage build to handle model downloading with proper permissions
+
+# Stage 1: Download models as root
+FROM python:3.10-slim AS model-builder
+
+# Install system dependencies for model downloading
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install huggingface_hub for downloading models
+RUN pip install huggingface_hub
+
+# Create models directory
+RUN mkdir -p /models
+
+# Create download script
+RUN echo 'from huggingface_hub import hf_hub_download\n\
+import os\n\
+\n\
+# Download model files\n\
+print("Downloading model files...")\n\
+hf_hub_download("seamo-ai/marina-species-v1", "marina-benthic-33k.pt", local_dir="/models", local_dir_use_symlinks=False)\n\
+hf_hub_download("seamo-ai/marina-species-v1", "marina-benthic-33k.names", local_dir="/models", local_dir_use_symlinks=False)\n\
+\n\
+# Download sample images\n\
+print("Downloading sample images...")\n\
+sample_images = [\n\
+    "crab.png", "fish.png", "fish_2.png", "fish_3.png", "fish_4.png", "fish_5.png",\n\
+    "flat_fish.png", "flat_red_fish.png", "jelly.png", "jelly_2.png", "jelly_3.png",\n\
+    "puff.png", "red_fish.png", "red_fish_2.png", "scene.png", "scene_2.png",\n\
+    "scene_3.png", "scene_4.png", "scene_5.png", "scene_6.png", "soft_coral.png",\n\
+    "starfish.png", "starfish_2.png"\n\
+]\n\
+\n\
+for img in sample_images:\n\
+    try:\n\
+        hf_hub_download("seamo-ai/marina-species-v1", f"images/{img}", local_dir="/models", local_dir_use_symlinks=False)\n\
+        print(f"Downloaded {img}")\n\
+    except Exception as e:\n\
+        print(f"Failed to download {img}: {e}")\n\
+\n\
+print("Download complete!")' > /tmp/download_models.py
+
+# Run the download script
+RUN python3 /tmp/download_models.py
+
+# Stage 2: Build the application
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libglib2.0-0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a new user named "user" with user ID 1000
+RUN useradd -m -u 1000 user
+
+# Switch to the "user" user
+USER user
+
+# Set home to the user's home directory
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
+
+# Set the working directory to the user's home directory
+WORKDIR $HOME/app
+
+# Set environment variables for HuggingFace and ML libraries
+ENV HF_HUB_OFFLINE=1
+ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
+ENV PYTHONPATH=$HOME/app
+ENV TORCH_HOME=$HOME/.cache/torch
+ENV HF_HOME=$HOME/.cache/huggingface
+
+# Copy the requirements file and install dependencies
+COPY --chown=user ./requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Copy the downloaded models from the builder stage
+COPY --chown=user --from=model-builder /models $HOME/app/models
+
+# Copy the application code
+COPY --chown=user ./app app
+
+# Copy templates and static files for dashboard
+COPY --chown=user ./templates templates
+COPY --chown=user ./static static
+
+# Copy sample images from models to static directory for web access
+RUN mkdir -p static/images/samples
+RUN if [ -d "$HOME/app/models/images" ]; then cp $HOME/app/models/images/*.png static/images/samples/ 2>/dev/null || true; fi
+
+# Create necessary directories
+RUN mkdir -p $HOME/.cache/huggingface $HOME/.cache/torch
+
+# Expose port 7860 (HuggingFace Spaces standard)
+EXPOSE 7860
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:7860/health || exit 1
+
+# Tell uvicorn to run on port 7860, which is the standard for HF Spaces
+# Use 0.0.0.0 to make it accessible from outside the container
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
